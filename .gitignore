@@ -8,3 +8,6 @@ classes
 conf/application.yml
 ./bin/log/*
 ./bin/sys/log/*
+gradle/
+gradlew
+gradlew.bat
