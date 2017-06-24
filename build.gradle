@@ -46,3 +46,7 @@ dependencies {
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
 
 }
+
+def javaVersion = JavaVersion.VERSION_1_8;
+sourceCompatibility = javaVersion;
+targetCompatibility = javaVersion; // defaults to sourceCompatibility
