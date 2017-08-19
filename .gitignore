@@ -12,5 +12,6 @@ conf/application.yml
 ./bin/sys/log/*
 gradle/
 output/
+out/
 gradlew
 gradlew.bat
