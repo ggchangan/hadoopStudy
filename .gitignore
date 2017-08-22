@@ -12,6 +12,7 @@ conf/application.yml
 ./bin/sys/log/*
 gradle/
 output/
+matrixOutput/
 out/
 gradlew
 gradlew.bat
