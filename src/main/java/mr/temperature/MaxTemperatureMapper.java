@@ -11,25 +11,29 @@ import java.io.IOException;
 public class MaxTemperatureMapper
         extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-    private static final Integer MISSING = 9999;
+    private NcdcRecordParser parser = new NcdcRecordParser();
 
     @Override
     protected void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        String line = value.toString();
-        String year = line.substring(15, 19);
-        int airTemperature;
-        if (line.charAt(87) == '+') {
-            airTemperature = Integer.parseInt(line.substring(88, 92));
-        } else {
-            airTemperature = Integer.parseInt(line.substring(87, 92));
+        parser.parse(value);
+
+        if (parser.isValidTemperature()) {
+            int airTemperature = parser.getAirTemperature();
+            context.write(new Text(parser.getYear()), new IntWritable(airTemperature));
+        } else if (parser.isMalformedTemperature()) {
+            System.err.println("Ignoring possibly corrupt input:" + value);
+            context.getCounter(Temperature.MALFORMED).increment(1);
+        } else if (parser.isMissingTemperature()) {
+            context.getCounter(Temperature.MISSING).increment(1);
         }
 
-        String quality = line.substring(92, 93);
-        if (airTemperature != MISSING && quality.matches("[01459]")) {
-            context.write(new Text(year), new IntWritable(airTemperature));
-        }
+        context.getCounter("TemperatureQuality", parser.getQuality()).increment(1);
     }
 
+    enum Temperature {
+        MISSING,
+        MALFORMED
+    }
 }
